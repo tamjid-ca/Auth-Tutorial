@@ -112,7 +112,7 @@ exports.login = async (req, res) => {
     // 3. Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid email or password.' });
+      return res.status(401).json({ message: 'Invalid password.' });
     }
 
     // 4. Sign tokens
