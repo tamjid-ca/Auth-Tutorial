@@ -2,7 +2,9 @@ const express = require('express');
 const app = express();
 
 // ── Body parsing middleware ───────────────────────────────────────────────
-app.use(express.json());
+// Accept both application/json AND text/plain (common Postman misconfiguration)
+app.use(express.json({ type: ['application/json', 'text/plain'] }));
+app.use(express.urlencoded({ extended: true }));
 
 // ── Routes ───────────────────────────────────────────────────────────────
 app.use('/api/auth',  require('./routes/authRoutes'));
