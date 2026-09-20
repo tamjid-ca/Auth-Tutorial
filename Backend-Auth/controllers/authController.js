@@ -46,7 +46,7 @@ exports.register = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
 
   try {
     // 2. Duplicate email check
@@ -59,15 +59,29 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 4. Save user
-    const user = await User.create({
+    // 4. Prepare user data
+    const userData = {
       name,
       email,
       password: hashedPassword,
-    });
+    };
 
-    // 5. Return user (exclude sensitive fields)
-    res.status(201).json({
+    // Add role only when provided
+    if (role) {
+      userData.role = role;
+    }
+
+    // 5. Create user
+    const user = await User.create(userData);
+
+    // 6. Sign tokens
+    const accessToken = signAccessToken(user);
+    const refreshToken = signRefreshToken(user);
+
+    // 7. Persist refresh token to DB
+    await User.findByIdAndUpdate(user._id, { refreshToken });
+
+    return res.status(201).json({
       message: 'User registered successfully.',
       user: {
         id: user._id,
@@ -76,6 +90,8 @@ exports.register = async (req, res) => {
         role: user.role,
         createdAt: user.createdAt,
       },
+      accessToken,
+      refreshToken,
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error during registration.', error: error.message });
@@ -120,8 +136,7 @@ exports.login = async (req, res) => {
     const refreshToken = signRefreshToken(user);
 
     // 5. Persist refresh token to DB for revocation support
-    user.refreshToken = refreshToken;
-    await user.save();
+    await User.findByIdAndUpdate(user._id, { refreshToken });
 
     // 6. Return tokens
     res.status(200).json({
