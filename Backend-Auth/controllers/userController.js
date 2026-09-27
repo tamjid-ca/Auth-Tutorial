@@ -38,3 +38,71 @@ exports.getAdminDashboard = (req, res) => {
     },
   });
 };
+
+/**
+ * POST /api/users/address
+ * Add a new address
+ */
+exports.addAddress = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found.' });
+
+    const newAddress = req.body;
+    user.addresses.push(newAddress);
+    await user.save();
+
+    res.status(201).json({ message: 'Address added successfully', addresses: user.addresses });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error adding address.', error: error.message });
+  }
+};
+
+/**
+ * PUT /api/users/address/:addressId
+ * Update an existing address
+ */
+exports.updateAddress = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found.' });
+
+    const address = user.addresses.id(req.params.addressId);
+    if (!address) return res.status(404).json({ message: 'Address not found.' });
+
+    // Update fields
+    const { street, city, state, zip, country } = req.body;
+    if (street) address.street = street;
+    if (city) address.city = city;
+    if (state) address.state = state;
+    if (zip) address.zip = zip;
+    if (country) address.country = country;
+
+    await user.save();
+
+    res.status(200).json({ message: 'Address updated successfully', addresses: user.addresses });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error updating address.', error: error.message });
+  }
+};
+
+/**
+ * DELETE /api/users/address/:addressId
+ * Delete an address
+ */
+exports.deleteAddress = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found.' });
+
+    const address = user.addresses.id(req.params.addressId);
+    if (!address) return res.status(404).json({ message: 'Address not found.' });
+
+    user.addresses.pull(req.params.addressId);
+    await user.save();
+
+    res.status(200).json({ message: 'Address deleted successfully', addresses: user.addresses });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error deleting address.', error: error.message });
+  }
+};
