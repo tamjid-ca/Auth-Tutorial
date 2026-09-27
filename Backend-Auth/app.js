@@ -1,6 +1,24 @@
 const express = require('express');
 const app = express();
 
+// ── CORS middleware ────────────────────────────────────────────────────────
+app.use((req, res, next) => {
+  const allowedOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else if (!origin) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // ── Body parsing middleware ───────────────────────────────────────────────
 // Accept both application/json AND text/plain (common Postman misconfiguration)
 app.use(express.json({ type: ['application/json', 'text/plain'] }));
