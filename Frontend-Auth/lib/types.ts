@@ -45,3 +45,56 @@ export interface ApiErrorResponse {
   errors?: ApiValidationError[];
   error?: string;
 }
+
+export interface Address {
+  _id: string;
+  user: string;
+  label: "home" | "work" | "other";
+  fullName: string;
+  phone: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AddressListResponse {
+  count: number;
+  addresses: Address[];
+}
+
+export interface AddressSingleResponse {
+  message?: string;
+  address: Address;
+}
+
+export interface AddressCreateInput {
+  label?: "home" | "work" | "other";
+  fullName: string;
+  phone: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  isDefault?: boolean;
+}
+
+export interface AddressUpdateInput {
+  label?: "home" | "work" | "other";
+  fullName?: string;
+  phone?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  isDefault?: boolean;
+}

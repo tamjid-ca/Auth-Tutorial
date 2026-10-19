@@ -4,6 +4,10 @@ import {
   AdminResponse,
   RefreshResponse,
   ApiErrorResponse,
+  AddressListResponse,
+  AddressSingleResponse,
+  AddressCreateInput,
+  AddressUpdateInput,
 } from "./types";
 
 const API_BASE_URL =
@@ -202,5 +206,36 @@ export const authApi = {
 
   getAdminDashboard: (): Promise<AdminResponse> => {
     return apiFetch<AdminResponse>("/api/admin/dashboard");
+  },
+};
+
+// ── Address Endpoints ──────────────────────────────────────────────────────
+export const addressApi = {
+  getAll: (): Promise<AddressListResponse> => {
+    return apiFetch<AddressListResponse>("/api/users/addresses");
+  },
+
+  getById: (id: string): Promise<AddressSingleResponse> => {
+    return apiFetch<AddressSingleResponse>(`/api/users/addresses/${id}`);
+  },
+
+  create: (data: AddressCreateInput): Promise<AddressSingleResponse> => {
+    return apiFetch<AddressSingleResponse>("/api/users/addresses", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  update: (id: string, data: AddressUpdateInput): Promise<AddressSingleResponse> => {
+    return apiFetch<AddressSingleResponse>(`/api/users/addresses/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+  },
+
+  delete: (id: string): Promise<{ message: string }> => {
+    return apiFetch<{ message: string }>(`/api/users/addresses/${id}`, {
+      method: "DELETE",
+    });
   },
 };

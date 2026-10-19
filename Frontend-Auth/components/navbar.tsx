@@ -32,6 +32,7 @@ import {
   LayoutDashboard,
   ShieldCheck,
   Radio,
+  MapPin,
 } from "lucide-react";
 
 export const Navbar = () => {
@@ -97,6 +98,17 @@ export const Navbar = () => {
                   >
                     <LayoutDashboard className="h-4 w-4" />
                     Dashboard
+                  </Button>
+                </Link>
+
+                <Link href="/addresses">
+                  <Button
+                    variant={isActive("/addresses") ? "secondary" : "ghost"}
+                    size="sm"
+                    className="flex items-center gap-1.5 text-sm font-medium"
+                  >
+                    <MapPin className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    Addresses
                   </Button>
                 </Link>
 
